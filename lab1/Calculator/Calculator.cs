@@ -32,10 +32,8 @@ namespace Calculator
             {
                 Console.WriteLine(e.Message);
             }
-            finally
-            {
-                WriteFooter();
-            }
+
+            WriteFooter();
         }
 
         static double ReadNumber(string msg)
