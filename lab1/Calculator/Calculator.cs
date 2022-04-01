@@ -10,7 +10,7 @@ namespace Calculator
     {
         private enum Operation
         {
-            Add,
+            Add = 0,
             Sub,
             Mul,
             Div
@@ -46,11 +46,11 @@ namespace Calculator
             }
             catch (FormatException)
             {
-                throw;
+                throw new FormatException("Failed to read number: string contains non numeric symbols.");
             }
             catch (OverflowException)
             {
-                throw;
+                throw new OverflowException("Failed to read number: value overflow.");
             }
         }
 
