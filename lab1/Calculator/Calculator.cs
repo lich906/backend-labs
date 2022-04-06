@@ -11,9 +11,9 @@ namespace Calculator
         private enum Operation
         {
             Add = 0,
-            Sub,
-            Mul,
-            Div
+            Sub = 1,
+            Mul = 2,
+            Div = 3
         }
 
         static void Main(string[] args)
