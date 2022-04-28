@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ScrumBoardService
+﻿namespace ScrumBoardService
 {
     public class Card
     {
@@ -17,11 +11,11 @@ namespace ScrumBoardService
             Blocker
         };
 
-        public Card(string name)
+        public Card(string name, string description, PriorityType priority)
         {
             Name = name;
-            Description = "";
-            Priority = PriorityType.Normal;
+            Description = description;
+            Priority = priority;
         }
 
         public string Name { get; private set; }

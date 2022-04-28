@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ScrumBoardService
 {
@@ -29,14 +26,14 @@ namespace ScrumBoardService
             _columns.Add(new BoardColumn(name));
         }
 
-        public void AddNewCard(string name)
+        public void AddNewCard(string name, string description, Card.PriorityType priority)
         {
             if (_columns.Count == 0)
             {
                 throw new Exception("Board has no columns");
             }
 
-            _columns[0].AddCard(new Card(name));
+            _columns[0].AddCard(new Card(name, description, priority));
         }
 
         public void MoveCard(int srcColumn, int cardOrder, int destColumn)
