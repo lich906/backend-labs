@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ScrumBoardService
+namespace ScrumBoard
 {
     public class Board
     {
@@ -36,12 +36,14 @@ namespace ScrumBoardService
             _columns[0].AddCard(new Card(name, description, priority));
         }
 
-        public void MoveCard(int srcColumn, int cardOrder, int destColumn)
+        public void MoveCard(string srcColumnName, string cardName, string destColumnName)
         {
             try
             {
-                _columns[destColumn].AddCard(_columns[srcColumn].GetCard(cardOrder));
-                _columns[srcColumn].DeleteCard(cardOrder);
+                BoardColumn destColumn = GetColumnByName(destColumnName);
+                BoardColumn srcColumn = GetColumnByName(srcColumnName);
+                destColumn.AddCard(srcColumn.GetCardByName(cardName));
+                srcColumn.DeleteCardByName(cardName);
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -49,26 +51,24 @@ namespace ScrumBoardService
             }
         }
 
-        public BoardColumn GetColumn(int order)
+        public BoardColumn GetColumnByName(string name)
         {
-            try
+            int index;
+            if ((index = _columns.FindIndex(column => column.Name == name)) >= 0)
             {
-                return _columns[order];
+                return _columns[index];
             }
-            catch (ArgumentOutOfRangeException)
+            else
             {
-                throw new ArgumentOutOfRangeException("Attempt to get column at out of range position");
+                throw new ArgumentNullException($"Column with name '{name}' not found.");
             }
         }
-        public void DeleteColumn(int order)
+
+        public void DeleteColumnByName(string name)
         {
-            try
+            if (_columns.RemoveAll(column => column.Name == name) == 0)
             {
-                _columns.RemoveAt(order);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                throw new ArgumentOutOfRangeException("Attempt to delete column at out of range position");
+                throw new ArgumentOutOfRangeException($"Column with name '{name}' does not exist.");
             }
         }
 

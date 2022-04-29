@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScrumBoardService
+namespace ScrumBoard
 {
     public class BoardColumn
     {
@@ -24,18 +24,24 @@ namespace ScrumBoardService
 
         public void AddCard(Card card)
         {
+            if (_cards.Exists(_card => _card.Name == card.Name))
+            {
+                throw new ArgumentException($"Card with same name '{card.Name}' already present in that column.");
+            }
+
             _cards.Add(card);
         }
 
-        public Card GetCard(int order)
+        public Card GetCardByName(string name)
         {
-            try
+            int index;
+            if((index = _cards.FindIndex(card => card.Name == name)) >= 0)
             {
-                return _cards[order];
+                return _cards[index];
             }
-            catch (ArgumentOutOfRangeException)
+            else
             {
-                throw new ArgumentOutOfRangeException("Attempt to get card at out of range position");
+                throw new KeyNotFoundException($"Card with name '{name} not found.'");
             }
         }
 
@@ -44,13 +50,9 @@ namespace ScrumBoardService
             return _cards;
         }
 
-        public void DeleteCard(int order)
+        public void DeleteCardByName(string name)
         {
-            try
-            {
-                _cards.RemoveAt(order);
-            }
-            catch (ArgumentOutOfRangeException)
+            if (_cards.RemoveAll(card => card.Name == name) == 0)
             {
                 throw new ArgumentOutOfRangeException("Attempt to delete card at out of range position");
             }

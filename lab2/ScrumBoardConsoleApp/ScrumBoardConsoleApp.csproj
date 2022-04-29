@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9E4EF438-2F47-42A0-BBA4-6E9744F60A90}</ProjectGuid>
+    <ProjectGuid>{D411AE0E-6698-4C6C-A6C3-D8414A8DE3A9}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>ScrumBoardConsoleApp</RootNamespace>
     <AssemblyName>ScrumBoardConsoleApp</AssemblyName>
@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ScrumBoardService">
-      <HintPath>..\ScrumBoardService\bin\Debug\netcoreapp3.1\ScrumBoardService.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,11 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ConsoleApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ScrumBoard\ScrumBoard.csproj">
+      <Project>{0fdf8042-81b0-4d50-a4f7-0b285dc2a933}</Project>
+      <Name>ScrumBoard</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

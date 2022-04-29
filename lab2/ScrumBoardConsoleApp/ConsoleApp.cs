@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ScrumBoardService;
+using ScrumBoard;
 
 namespace ScrumBoardConsoleApp
 {
@@ -12,6 +12,7 @@ namespace ScrumBoardConsoleApp
             AddColumn,
             AddCard,
             MoveCard,
+            Show,
             Help,
             Exit,
             Unknown
@@ -23,9 +24,11 @@ namespace ScrumBoardConsoleApp
                 { "add-column", Command.AddColumn },
                 { "add-card", Command.AddCard },
                 { "move-card", Command.MoveCard },
+                { "show", Command.Show },
                 { "help", Command.Help },
                 { "exit", Command.Exit }
             };
+
         private static readonly Dictionary<string, Card.PriorityType> _mapStringToPriority =
             new Dictionary<string, Card.PriorityType>()
             {
@@ -57,7 +60,7 @@ namespace ScrumBoardConsoleApp
             }
         }
 
-        static Board InitBoard()
+        private static Board InitBoard()
         {
             Console.WriteLine("Enter board name...");
             string name = Console.ReadLine();
@@ -65,7 +68,7 @@ namespace ScrumBoardConsoleApp
             return new Board(name);
         }
 
-        static (Command, string[]) ReadCommand()
+        private static (Command, string[]) ReadCommand()
         {
             string rawString = Console.ReadLine();
 
@@ -79,7 +82,32 @@ namespace ScrumBoardConsoleApp
             return (_mapStringToCommand[splittedStr[0]], splittedStr.Skip(1).ToArray());
         }
 
-        static void ValidateCommand((Command type, string[] args) command)
+        private static void HandleCommand((Command type, string[] args) command, Board board)
+        {
+            ValidateCommand(command);
+
+            switch (command.type)
+            {
+                case Command.AddCard:
+                    board.AddNewCard(command.args[0], command.args[1], _mapStringToPriority[command.args[2]]);
+                    Console.WriteLine($"Card '{command.args[0]}' successfully added to first column");
+                    break;
+                case Command.AddColumn:
+                    board.AddNewColumn(command.args[0]);
+                    Console.WriteLine($"Column '{command.args[0]}' successfully added.");
+                    break;
+                case Command.Exit:
+                    Console.WriteLine("Gracefully exiting...");
+                    break;
+                case Command.Show:
+                    ShowBoard(board);
+                    break;
+                default:
+                    throw new ArgumentException("In function HandleCommand: Invalid command type.");
+            }
+        }
+
+        private static void ValidateCommand((Command type, string[] args) command)
         {
             switch (command.type)
             {
@@ -106,22 +134,23 @@ namespace ScrumBoardConsoleApp
             }
         }
 
-        static void HandleCommand((Command type, string[] args) command, Board board)
+        private static void ShowBoard(Board board)
         {
-            ValidateCommand(command);
+            List<BoardColumn> columns = board.GetAllColumns();
 
-            switch (command.type)
+            foreach (BoardColumn column in columns)
             {
-                case Command.AddCard:
-                    board.AddNewCard(command.args[0], command.args[1], _mapStringToPriority[command.args[2]]);
-                    break;
-                case Command.AddColumn:
-                    board.AddNewColumn(command.args[0]);
-                    break;
-                case Command.Exit:
-                    break;
-                default:
-                    throw new ArgumentException("In function HandleCommand: Invalid command type.");
+                Console.WriteLine($"====== {column.Name} ======");
+                foreach(Card card in column.GetAllCards())
+                {
+                    Console.WriteLine("----------------------------");
+                    Console.WriteLine($"|   {card.Name}");
+                    Console.WriteLine($"| > {card.GetPriorityString()}");
+                    Console.WriteLine("|");
+                    Console.WriteLine($"|   {card.Description}");
+                    Console.WriteLine("----------------------------");
+                    Console.WriteLine();
+                }
             }
         }
     }
