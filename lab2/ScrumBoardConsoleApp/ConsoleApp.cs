@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ScrumBoard;
 
 namespace ScrumBoardConsoleApp
@@ -14,8 +13,7 @@ namespace ScrumBoardConsoleApp
             MoveCard,
             Show,
             Help,
-            Exit,
-            Unknown
+            Exit
         }
 
         private static readonly Dictionary<string, Command> _mapStringToCommand =
@@ -42,20 +40,21 @@ namespace ScrumBoardConsoleApp
         static void Main()
         {
             Board board = InitBoard();
+            Command command = Command.Help;
 
-            Command lastCommand = Command.Unknown;
-
-            while (lastCommand != Command.Exit)
+            while (command != Command.Exit)
             {
-                (Command command, string[] args) = ReadCommand();
-                lastCommand = command;
                 try
                 {
-                    HandleCommand((command, args), board);
+                    command = ReadCommand();
+                    HandleCommand(command, board);
                 }
                 catch(Exception e)
                 {
+                    Console.BackgroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Black;
                     Console.WriteLine(e.Message);
+                    Console.ResetColor();
                 }
             }
         }
@@ -68,80 +67,64 @@ namespace ScrumBoardConsoleApp
             return new Board(name);
         }
 
-        private static (Command, string[]) ReadCommand()
+        private static Command ReadCommand()
         {
             string rawString = Console.ReadLine();
 
-            string[] splittedStr = rawString.Split(' ');
-
-            if (!_mapStringToCommand.ContainsKey(splittedStr[0]))
+            if (!_mapStringToCommand.ContainsKey(rawString))
             {
-                return (Command.Unknown, new string[0]);
+                throw new ArgumentException($"Unknown command '{rawString}'. Use 'help' command to see available commands.");
             }
 
-            return (_mapStringToCommand[splittedStr[0]], splittedStr.Skip(1).ToArray());
+            return _mapStringToCommand[rawString];
         }
 
-        private static void HandleCommand((Command type, string[] args) command, Board board)
+        private static void HandleCommand(Command command, Board board)
         {
-            ValidateCommand(command);
-
-            switch (command.type)
+            switch (command)
             {
                 case Command.AddCard:
-                    board.AddNewCard(command.args[0], command.args[1], _mapStringToPriority[command.args[2]]);
-                    Console.WriteLine($"Card '{command.args[0]}' successfully added to first column");
+                    AddCard(board);
                     break;
                 case Command.AddColumn:
-                    board.AddNewColumn(command.args[0]);
-                    Console.WriteLine($"Column '{command.args[0]}' successfully added.");
+                    AddColumn(board);
                     break;
-                case Command.Exit:
-                    Console.WriteLine("Gracefully exiting...");
+                case Command.MoveCard:
+                    MoveCard(board);
                     break;
                 case Command.Show:
                     ShowBoard(board);
+                    break;
+                case Command.Help:
+                    ShowHelp();
+                    break;
+                case Command.Exit:
+                    Console.WriteLine("Exiting...");
                     break;
                 default:
                     throw new ArgumentException("In function HandleCommand: Invalid command type.");
             }
         }
 
-        private static void ValidateCommand((Command type, string[] args) command)
-        {
-            switch (command.type)
-            {
-                case Command.AddCard:
-                    if (command.args.Length != 3)
-                    {
-                        throw new ArgumentException("Invalid arguments for 'add-card' command. Usage: add-card <card name> <description> <priority>");
-                    }
-                    if (!_mapStringToPriority.ContainsKey(command.args[2]))
-                    {
-                        throw new ArgumentException($"Unknown priority '{command.args[2]}' specified. Use 'help' command for info.");
-                    }
-                    break;
-                case Command.AddColumn:
-                    if (command.args.Length != 1)
-                    {
-                        throw new ArgumentException("Invalid arguments for 'add-column' command. Usage: add-column <column name>");
-                    }
-                    break;
-                case Command.Unknown:
-                    throw new ArgumentException("Unknown command. Use 'help' command for info.");
-                default:
-                    throw new ArgumentException("In function ValidateCommand: Invalid command type.");
-            }
-        }
-
         private static void ShowBoard(Board board)
         {
+            Console.WriteLine($"++++++++++++++++++ {board.Name} ++++++++++++++++++");
             List<BoardColumn> columns = board.GetAllColumns();
+
+            if (columns.Count == 0)
+            {
+                Console.WriteLine("There is no columns yet. Use 'add-column' command to add some columns.");
+            }
 
             foreach (BoardColumn column in columns)
             {
-                Console.WriteLine($"====== {column.Name} ======");
-                foreach(Card card in column.GetAllCards())
+                Console.WriteLine($"============ {column.Name} ============");
+                List<Card> cards = column.GetAllCards();
+                if (cards.Count == 0)
+                {
+                    Console.WriteLine("Column is empty.");
+                }
+                foreach (Card card in cards)
                 {
                     Console.WriteLine("----------------------------");
                     Console.WriteLine($"|   {card.Name}");
@@ -152,6 +135,58 @@ namespace ScrumBoardConsoleApp
                     Console.WriteLine();
                 }
             }
+        }
+
+        private static void AddCard(Board board)
+        {
+            Console.WriteLine("Enter card name");
+            string name = Console.ReadLine();
+            Console.WriteLine("Enter description");
+            string description = Console.ReadLine();
+            Console.WriteLine("Enter priority");
+            string priorityString = Console.ReadLine();
+            if (!_mapStringToPriority.ContainsKey(priorityString))
+            {
+                throw new ArgumentException("Invalid priority type. Available values: 'minor', 'normal', 'major', 'critical', 'blocker'");
+            }
+
+            board.AddNewCard(name, description, _mapStringToPriority[priorityString]);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Card was added successfully.");
+            Console.ResetColor();
+        }
+
+        private static void AddColumn(Board board)
+        {
+            Console.WriteLine("Enter column name");
+            string name = Console.ReadLine();
+            board.AddNewColumn(name);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Column was added successfully.");
+            Console.ResetColor();
+        }
+
+        private static void MoveCard(Board board)
+        {
+            Console.WriteLine("Enter the card's name you want to move.");
+            string cardName = Console.ReadLine();
+            Console.WriteLine("Enter the column's name to which you want to move the card.");
+            string columnName = Console.ReadLine();
+
+            board.MoveCard(cardName, columnName);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Card was moved successfully.");
+            Console.ResetColor();
+        }
+
+        private static void ShowHelp()
+        {
+            Console.WriteLine("'help'\t\tShows this help message.");
+            Console.WriteLine("'add-column'\tAdd column on the board. Column names must be unique");
+            Console.WriteLine("'add-card'\tAdd card on the board. Card will be placed in the first column.");
+            Console.WriteLine("'move-card'\tMove card to specific column");
+            Console.WriteLine("'show'\t\tShows the current board.");
+            Console.WriteLine("'exit'\t\tExit the program.");
         }
     }
 }

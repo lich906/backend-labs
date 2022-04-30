@@ -24,11 +24,6 @@ namespace ScrumBoard
 
         public void AddCard(Card card)
         {
-            if (_cards.Exists(_card => _card.Name == card.Name))
-            {
-                throw new ArgumentException($"Card with same name '{card.Name}' already present in that column.");
-            }
-
             _cards.Add(card);
         }
 
