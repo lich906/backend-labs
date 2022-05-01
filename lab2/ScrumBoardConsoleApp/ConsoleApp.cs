@@ -252,12 +252,16 @@ namespace ScrumBoardConsoleApp
 
         private static void ShowHelp()
         {
-            Console.WriteLine("'help'\t\tShows this help message.");
-            Console.WriteLine("'add-column'\tAdd column on the board. Column names must be unique");
-            Console.WriteLine("'add-card'\tAdd card on the board. Card will be placed in the first column.");
-            Console.WriteLine("'move-card'\tMove card to specific column");
-            Console.WriteLine("'show'\t\tShows the current board.");
-            Console.WriteLine("'exit'\t\tExit the program.");
+            Console.WriteLine("'help'\t\t\t\tShows this help message.");
+            Console.WriteLine("'add-column'\t\t\tAdd column on the board. Column names must be unique");
+            Console.WriteLine("'add-card'\t\t\tAdd card on the board. Card will be placed in the first column.");
+            Console.WriteLine("'move-card'\t\t\tMove card to specific column");
+            Console.WriteLine("'rename-column'\t\t\tChanges the column's name");
+            Console.WriteLine("'rename-card'\t\t\tChanges the card's name");
+            Console.WriteLine("'change-card-description'\tChanges the card's description");
+            Console.WriteLine("'change-card-priority'\t\tChanges the card's priority");
+            Console.WriteLine("'show'\t\t\t\tShows the current board.");
+            Console.WriteLine("'exit'\t\t\t\tExit the program.");
         }
 
         private static Command GetCommandByString(string commandString)
