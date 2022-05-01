@@ -67,7 +67,7 @@ namespace ScrumBoard
             }
             else
             {
-                throw new ArgumentNullException($"Column with name '{name}' does not exist.");
+                throw new ApplicationException($"Column with name '{name}' does not exist.");
             }
         }
 
