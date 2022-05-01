@@ -9,6 +9,10 @@ namespace ScrumBoardConsoleApp
         enum Command
         {
             AddColumn,
+            RenameColumn,
+            RenameCard,
+            ChangeCardDescription,
+            ChangeCardPrority,
             AddCard,
             MoveCard,
             Show,
@@ -20,6 +24,10 @@ namespace ScrumBoardConsoleApp
             new Dictionary<string, Command>()
             {
                 { "add-column", Command.AddColumn },
+                { "rename-column", Command.RenameColumn },
+                { "rename-card", Command.RenameCard },
+                { "change-card-description", Command.ChangeCardDescription },
+                { "change-card-prority", Command.ChangeCardPrority },
                 { "add-card", Command.AddCard },
                 { "move-card", Command.MoveCard },
                 { "show", Command.Show },
@@ -71,12 +79,7 @@ namespace ScrumBoardConsoleApp
         {
             string rawString = Console.ReadLine();
 
-            if (!_mapStringToCommand.ContainsKey(rawString))
-            {
-                throw new ArgumentException($"Unknown command '{rawString}'. Use 'help' command to see available commands.");
-            }
-
-            return _mapStringToCommand[rawString];
+            return GetCommandByString(rawString);
         }
 
         private static void HandleCommand(Command command, Board board)
@@ -91,6 +94,18 @@ namespace ScrumBoardConsoleApp
                     break;
                 case Command.MoveCard:
                     MoveCard(board);
+                    break;
+                case Command.RenameColumn:
+                    RenameColumn(board);
+                    break;
+                case Command.RenameCard:
+                    RenameCard(board);
+                    break;
+                case Command.ChangeCardDescription:
+                    ChangeCardDescription(board);
+                    break;
+                case Command.ChangeCardPrority:
+                    ChangeCardPriority(board);
                     break;
                 case Command.Show:
                     ShowBoard(board);
@@ -145,12 +160,9 @@ namespace ScrumBoardConsoleApp
             string description = Console.ReadLine();
             Console.WriteLine("Enter priority");
             string priorityString = Console.ReadLine();
-            if (!_mapStringToPriority.ContainsKey(priorityString))
-            {
-                throw new ArgumentException("Invalid priority type. Available values: 'minor', 'normal', 'major', 'critical', 'blocker'");
-            }
 
-            board.AddNewCard(name, description, _mapStringToPriority[priorityString]);
+            board.AddNewCard(name, description, GetPriorityByString(priorityString));
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Card was added successfully.");
             Console.ResetColor();
@@ -160,7 +172,9 @@ namespace ScrumBoardConsoleApp
         {
             Console.WriteLine("Enter column name");
             string name = Console.ReadLine();
+
             board.AddNewColumn(name);
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Column was added successfully.");
             Console.ResetColor();
@@ -174,8 +188,65 @@ namespace ScrumBoardConsoleApp
             string columnName = Console.ReadLine();
 
             board.MoveCard(cardName, columnName);
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Card was moved successfully.");
+            Console.ResetColor();
+        }
+
+        private static void RenameColumn(Board board)
+        {
+            Console.WriteLine("Enter the column name you want to rename.");
+            string name = Console.ReadLine();
+            Console.WriteLine("Enter the new column name.");
+            string newName = Console.ReadLine();
+
+            board.RenameColumn(name, newName);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Column renamed successfully.");
+            Console.ResetColor();
+        }
+
+        private static void RenameCard(Board board)
+        {
+            Console.WriteLine("Enter the card name you want to rename.");
+            string name = Console.ReadLine();
+            Console.WriteLine("Enter the new card name.");
+            string newName = Console.ReadLine();
+
+            board.RenameCard(name, newName);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Card renamed successfully.");
+            Console.ResetColor();
+        }
+
+        private static void ChangeCardDescription(Board board)
+        {
+            Console.WriteLine("Enter the card name for which want to change the description.");
+            string name = Console.ReadLine();
+            Console.WriteLine("Enter the new description.");
+            string newDescription = Console.ReadLine();
+
+            board.GetCardByName(name).ChangeDescription(newDescription);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Card's description changed successfully.");
+            Console.ResetColor();
+        }
+
+        private static void ChangeCardPriority(Board board)
+        {
+            Console.WriteLine("Enter the card name for which want to change the priorty.");
+            string name = Console.ReadLine();
+            Console.WriteLine("Enter the new priority.");
+            string priorityString = Console.ReadLine();
+
+            board.GetCardByName(name).ChangePriority(GetPriorityByString(priorityString));
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Card's priority changed successfully.");
             Console.ResetColor();
         }
 
@@ -187,6 +258,26 @@ namespace ScrumBoardConsoleApp
             Console.WriteLine("'move-card'\tMove card to specific column");
             Console.WriteLine("'show'\t\tShows the current board.");
             Console.WriteLine("'exit'\t\tExit the program.");
+        }
+
+        private static Command GetCommandByString(string commandString)
+        {
+            if (!_mapStringToCommand.ContainsKey(commandString))
+            {
+                throw new ArgumentException($"Unknown command '{commandString}'. Use 'help' command to see available commands.");
+            }
+
+            return _mapStringToCommand[commandString];
+        }
+
+        private static Card.PriorityType GetPriorityByString(string priorityString)
+        {
+            if (!_mapStringToPriority.ContainsKey(priorityString))
+            {
+                throw new ArgumentException("Invalid priority type. Available values: 'minor', 'normal', 'major', 'critical', 'blocker'");
+            }
+
+            return _mapStringToPriority[priorityString];
         }
     }
 }
