@@ -48,12 +48,8 @@ namespace ScrumBoard
 
         public void MoveCard(string cardName, string columnName)
         {
-            if (!CardNameExists(cardName))
-            {
-                throw new ApplicationException($"Card with name '{cardName}' does not exist.");
-            }
             BoardColumn destColumn = GetColumnByName(columnName);
-            int srcColumnIndex = _columns.FindIndex(column => column.GetAllCards().Exists(card => card.Name == cardName));
+            int srcColumnIndex = FindColumnIndexWithCard(cardName);
             destColumn.AddCard(_columns[srcColumnIndex].GetCardByName(cardName));
             _columns[srcColumnIndex].DeleteCardByName(cardName);
         }
@@ -71,12 +67,42 @@ namespace ScrumBoard
             }
         }
 
+        public Card GetCardByName(string name)
+        {
+            return _columns[FindColumnIndexWithCard(name)].GetCardByName(name);
+        }
+
         public void DeleteColumnByName(string name)
         {
             if (_columns.RemoveAll(column => column.Name == name) == 0)
             {
-                throw new ArgumentOutOfRangeException($"Column with name '{name}' does not exist.");
+                throw new ArgumentOutOfRangeException($"Can't delete column: column with name '{name}' does not exist.");
             }
+        }
+
+        public void RenameColumn(string name, string newName)
+        {
+            if(!ColumnNameExists(name))
+            {
+                throw new ApplicationException($"Can't rename column: column with name '{name}' does not exist.");
+            }
+
+            if(ColumnNameExists(newName))
+            {
+                throw new ApplicationException($"Can't rename column: column with name '{newName}' already exists.");
+            }
+
+            GetColumnByName(name).ChangeName(newName);
+        }
+
+        public void RenameCard(string name, string newName)
+        {
+            if (CardNameExists(newName))
+            {
+                throw new ApplicationException($"Can't rename card: card with name '{newName}' already exists.");
+            }
+
+            GetCardByName(name).ChangeName(newName);
         }
 
         public List<BoardColumn> GetAllColumns()
@@ -86,12 +112,34 @@ namespace ScrumBoard
 
         public bool CardNameExists(string name)
         {
-            return _columns.Exists(column => column.GetAllCards().Exists(card => card.Name == name));
+            try
+            {
+                FindColumnIndexWithCard(name);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool ColumnNameExists(string name)
         {
             return _columns.Exists(column => column.Name == name);
+        }
+
+        private int FindColumnIndexWithCard(string cardName)
+        {
+            int index = _columns.FindIndex(column => column.GetAllCards().Exists(card => card.Name == cardName));
+
+            if (index >= 0)
+            {
+                return index;
+            }
+            else
+            {
+                throw new ApplicationException($"Card with name '{cardName}' does not exist.");
+            }
         }
     }
 }

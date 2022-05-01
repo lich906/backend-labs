@@ -17,9 +17,9 @@ namespace ScrumBoard
 
         public string Name { get; private set; }
 
-        public void Rename(string name)
+        public void ChangeName(string newName)
         {
-            Name = name;
+            Name = newName;
         }
 
         public void AddCard(Card card)
@@ -36,7 +36,7 @@ namespace ScrumBoard
             }
             else
             {
-                throw new KeyNotFoundException($"Card with name '{name} not found.'");
+                throw new KeyNotFoundException($"Card with name '{name}' does not exist.");
             }
         }
 
@@ -49,7 +49,7 @@ namespace ScrumBoard
         {
             if (_cards.RemoveAll(card => card.Name == name) == 0)
             {
-                throw new ArgumentOutOfRangeException("Attempt to delete card at out of range position");
+                throw new ApplicationException($"There is no card '{name}' in that column.");
             }
         }
     }

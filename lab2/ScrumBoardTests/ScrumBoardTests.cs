@@ -25,7 +25,8 @@ namespace ScrumBoardTests
         public void AddNewColumn_PassingNameArg_ColumnCreated()
         {
             _sut.AddNewColumn("To do");
-            Assert.Equal("To do", _sut.GetAllColumns()[0].Name);
+            BoardColumn column = _sut.GetColumnByName("To do");
+            Assert.Equal("To do", column.Name);
         }
 
         [Fact]
@@ -48,6 +49,7 @@ namespace ScrumBoardTests
             _sut.AddNewColumn("8");
             _sut.AddNewColumn("9");
             _sut.AddNewColumn("10");
+            Assert.Equal(10, _sut.GetAllColumns().Count);
             Assert.Throws<ApplicationException>(() => _sut.AddNewColumn("11"));
         }
 
@@ -62,7 +64,7 @@ namespace ScrumBoardTests
         {
             _sut.AddNewColumn("Open");
             _sut.AddNewCard("Hello", "Say hello to everybody", Card.PriorityType.Normal);
-            Card card = _sut.GetAllColumns()[0].GetCardByName("Hello");
+            Card card = _sut.GetCardByName("Hello");
             Assert.Equal("Hello", card.Name);
             Assert.Equal("Say hello to everybody", card.Description);
             Assert.Equal(Card.PriorityType.Normal, card.Priority);
@@ -95,10 +97,10 @@ namespace ScrumBoardTests
         {
             _sut.AddNewColumn("Open");
             Assert.Single(_sut.GetAllColumns());
-            Assert.Empty(_sut.GetAllColumns()[0].GetAllCards());
+            Assert.Empty(_sut.GetColumnByName("Open").GetAllCards());
             _sut.AddNewCard("Hello", "Say hello to everybody", Card.PriorityType.Normal);
-            Assert.Single(_sut.GetAllColumns()[0].GetAllCards());
-            Card card = _sut.GetAllColumns()[0].GetCardByName("Hello");
+            Assert.Single(_sut.GetColumnByName("Open").GetAllCards());
+            Card card = _sut.GetColumnByName("Open").GetCardByName("Hello");
 
             Assert.Equal("Hello", card.Name);
             Assert.Equal("Say hello to everybody", card.Description);
@@ -107,13 +109,123 @@ namespace ScrumBoardTests
             _sut.AddNewColumn("In progress");
             Assert.Equal(2, _sut.GetAllColumns().Count);
             _sut.MoveCard("Hello", "In progress");
-            Assert.Empty(_sut.GetAllColumns()[0].GetAllCards());
-            Assert.Single(_sut.GetAllColumns()[1].GetAllCards());
-            card = _sut.GetAllColumns()[1].GetCardByName("Hello");
+            Assert.Empty(_sut.GetColumnByName("Open").GetAllCards());
+            Assert.Single(_sut.GetColumnByName("In progress").GetAllCards());
+            card = _sut.GetColumnByName("In progress").GetCardByName("Hello");
 
             Assert.Equal("Hello", card.Name);
             Assert.Equal("Say hello to everybody", card.Description);
             Assert.Equal(Card.PriorityType.Normal, card.Priority);
+        }
+
+        [Fact]
+        public void GetCardByName_NoColumns_ExceptionThrown()
+        {
+            Assert.Throws<ApplicationException>(() => _sut.GetCardByName("Hello"));
+        }
+
+        [Fact]
+        public void GetCardByName_CardDoesntExist_ExceptionThrown()
+        {
+            _sut.AddNewColumn("Open");
+            Assert.Throws<ApplicationException>(() => _sut.GetCardByName("Hello"));
+        }
+
+        [Fact]
+        public void GetCardByName_CardExists_CardRecieved()
+        {
+            _sut.AddNewColumn("Open");
+            _sut.AddNewCard("Hello", "Say hello", Card.PriorityType.Normal);
+            Assert.Throws<ApplicationException>(() => _sut.GetCardByName("Wrong name"));
+            Card card = _sut.GetCardByName("Hello");
+
+            Assert.Equal("Hello", card.Name);
+            Assert.Equal("Say hello", card.Description);
+            Assert.Equal(Card.PriorityType.Normal, card.Priority);
+        }
+
+        [Fact]
+        public void RenameColumn_ColumnDoesntExist_ExceptionThrown()
+        {
+            Assert.Throws<ApplicationException>(() => _sut.RenameColumn("Open", "Done"));
+        }
+
+        [Fact]
+        public void RenameColumn_ColumnWithNewNameExists_ExceptionThrown()
+        {
+            _sut.AddNewColumn("Done");
+            _sut.AddNewColumn("Open");
+            Assert.Throws<ApplicationException>(() => _sut.RenameColumn("Open", "Done"));
+        }
+
+        [Fact]
+        public void RenameColumn_ColumnToBeRenamedExistsAndNewNameIsFree_ColumnRenamed()
+        {
+            _sut.AddNewColumn("Open");
+            Assert.True(_sut.ColumnNameExists("Open"));
+            Assert.False(_sut.ColumnNameExists("Done"));
+            Assert.Single(_sut.GetAllColumns());
+
+            _sut.RenameColumn("Open", "Done");
+
+            Assert.False(_sut.ColumnNameExists("Open"));
+            Assert.True(_sut.ColumnNameExists("Done"));
+            Assert.Single(_sut.GetAllColumns());
+        }
+
+        [Fact]
+        public void RenameCard_NewCardNameTaken_ExceptionThrown()
+        {
+            _sut.AddNewColumn("Open");
+            _sut.AddNewCard("Hello", "Say hello", Card.PriorityType.Normal);
+            _sut.AddNewCard("Goodbye", "Say goodbye", Card.PriorityType.Normal);
+            Assert.Throws<ApplicationException>(() => _sut.RenameCard("Hello", "Goodbye"));
+        }
+
+        [Fact]
+        public void RenameCard_CardDoesntExist_ExceptionThrown()
+        {
+            _sut.AddNewColumn("Open");
+            _sut.AddNewCard("Hello", "Say hello", Card.PriorityType.Normal);
+            Assert.Throws<ApplicationException>(() => _sut.RenameCard("Acid", "Hello"));
+        }
+
+        [Fact]
+        public void RenameCard_CardExistsAndNewCardNameIsFree_CardRenamed()
+        {
+            _sut.AddNewColumn("Open");
+            _sut.AddNewCard("Hello", "Say hello", Card.PriorityType.Normal);
+            Assert.Single(_sut.GetColumnByName("Open").GetAllCards());
+            Assert.Equal("Hello", _sut.GetCardByName("Hello").Name);
+
+            _sut.RenameCard("Hello", "Privet");
+
+            Assert.Equal("Privet", _sut.GetCardByName("Privet").Name);
+            Assert.Single(_sut.GetColumnByName("Open").GetAllCards());
+        }
+
+        [Fact]
+        public void ChangeCardDescription_CardExists_DescriptionChanged()
+        {
+            _sut.AddNewColumn("Open");
+            _sut.AddNewCard("Hello", "Say hello", Card.PriorityType.Normal);
+            Assert.Equal("Say hello", _sut.GetCardByName("Hello").Description);
+
+            _sut.GetCardByName("Hello").ChangeDescription("Say privet");
+
+            Assert.Equal("Say privet", _sut.GetCardByName("Hello").Description);
+        }
+
+        [Fact]
+        public void ChangeCardPriority_CardExists_PriorityChanged()
+        {
+            _sut.AddNewColumn("Open");
+            _sut.AddNewCard("Hello", "Say hello", Card.PriorityType.Normal);
+            Assert.Equal(Card.PriorityType.Normal, _sut.GetCardByName("Hello").Priority);
+
+            _sut.GetCardByName("Hello").ChangePriority(Card.PriorityType.Major);
+
+            Assert.Equal(Card.PriorityType.Major, _sut.GetCardByName("Hello").Priority);
         }
     }
 }

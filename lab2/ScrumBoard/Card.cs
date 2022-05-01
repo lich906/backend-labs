@@ -26,6 +26,21 @@ namespace ScrumBoard
 
         public PriorityType Priority { get; private set; }
 
+        public void ChangeName(string newName)
+        {
+            Name = newName;
+        }
+
+        public void ChangeDescription(string newDescription)
+        {
+            Description = newDescription;
+        }
+
+        public void ChangePriority(PriorityType newPriority)
+        {
+            Priority = newPriority;
+        }
+
         public string GetPriorityString()
         {
             switch(Priority)
