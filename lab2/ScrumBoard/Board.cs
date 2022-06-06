@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ScrumBoard
 {
@@ -23,7 +24,7 @@ namespace ScrumBoard
                 throw new ApplicationException("Failed to add column: columns limit reached.");
             }
 
-            if (ColumnNameExists(name))
+            if (ColumnExists(name))
             {
                 throw new ApplicationException($"Column with name '{name}' already exists.");
             }
@@ -38,7 +39,7 @@ namespace ScrumBoard
                 throw new ApplicationException("Board has no columns");
             }
 
-            if (CardNameExists(name))
+            if (CardExists(name))
             {
                 throw new ApplicationException($"Card with name '{name}' already exists.");
             }
@@ -49,19 +50,18 @@ namespace ScrumBoard
         public void MoveCard(string cardName, string columnName)
         {
             BoardColumn destColumn = GetColumnByName(columnName);
-            int srcColumnIndex = FindColumnIndexWithCard(cardName);
-            destColumn.AddCard(_columns[srcColumnIndex].GetCardByName(cardName));
-            _columns[srcColumnIndex].DeleteCardByName(cardName);
+            BoardColumn srcColumn = GetColumnByCardName(cardName);
+            destColumn.AddCard(srcColumn.GetCardByName(cardName));
+            srcColumn.DeleteCardByName(cardName);
         }
 
         public BoardColumn GetColumnByName(string name)
         {
-            int index;
-            if ((index = _columns.FindIndex(column => column.Name == name)) >= 0)
+            try
             {
-                return _columns[index];
+                return _columns.Where(column => column.Name == name).Single();
             }
-            else
+            catch(InvalidOperationException)
             {
                 throw new ApplicationException($"Column with name '{name}' does not exist.");
             }
@@ -69,25 +69,25 @@ namespace ScrumBoard
 
         public Card GetCardByName(string name)
         {
-            return _columns[FindColumnIndexWithCard(name)].GetCardByName(name);
+            return GetColumnByCardName(name).GetCardByName(name);
         }
 
-        public void DeleteColumnByName(string name)
+        public void DeleteColumnByName(string columnName)
         {
-            if (_columns.RemoveAll(column => column.Name == name) == 0)
+            if (_columns.RemoveAll(column => column.Name == columnName) == 0)
             {
-                throw new ArgumentOutOfRangeException($"Can't delete column: column with name '{name}' does not exist.");
+                throw new ArgumentOutOfRangeException($"Can't delete column: column with name '{columnName}' does not exist.");
             }
         }
 
         public void RenameColumn(string name, string newName)
         {
-            if(!ColumnNameExists(name))
+            if(!ColumnExists(name))
             {
                 throw new ApplicationException($"Can't rename column: column with name '{name}' does not exist.");
             }
 
-            if(ColumnNameExists(newName))
+            if(ColumnExists(newName))
             {
                 throw new ApplicationException($"Can't rename column: column with name '{newName}' already exists.");
             }
@@ -97,7 +97,7 @@ namespace ScrumBoard
 
         public void RenameCard(string name, string newName)
         {
-            if (CardNameExists(newName))
+            if (CardExists(newName))
             {
                 throw new ApplicationException($"Can't rename card: card with name '{newName}' already exists.");
             }
@@ -110,11 +110,11 @@ namespace ScrumBoard
             return _columns;
         }
 
-        public bool CardNameExists(string name)
+        public bool CardExists(string cardName)
         {
             try
             {
-                FindColumnIndexWithCard(name);
+                GetColumnByCardName(cardName);
                 return true;
             }
             catch
@@ -123,22 +123,20 @@ namespace ScrumBoard
             }
         }
 
-        public bool ColumnNameExists(string name)
+        public bool ColumnExists(string columnName)
         {
-            return _columns.Exists(column => column.Name == name);
+            return _columns.Exists(column => column.Name == columnName);
         }
 
-        private int FindColumnIndexWithCard(string cardName)
+        private BoardColumn GetColumnByCardName(string cardName)
         {
-            int index = _columns.FindIndex(column => column.GetAllCards().Exists(card => card.Name == cardName));
-
-            if (index >= 0)
+            try
             {
-                return index;
+                return _columns.Where(column => column.HasCard(cardName)).Single();
             }
-            else
+            catch (InvalidOperationException)
             {
-                throw new ApplicationException($"Card with name '{cardName}' does not exist.");
+                throw new ApplicationException($"Column with card '{cardName}' does not exist.");
             }
         }
     }

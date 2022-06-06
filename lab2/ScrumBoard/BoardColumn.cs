@@ -27,16 +27,28 @@ namespace ScrumBoard
             _cards.Add(card);
         }
 
-        public Card GetCardByName(string name)
+        public Card GetCardByName(string cardName)
         {
-            int index;
-            if((index = _cards.FindIndex(card => card.Name == name)) >= 0)
+            try
             {
-                return _cards[index];
+                return _cards.Where(card => card.Name == cardName).Single();
             }
-            else
+            catch (InvalidOperationException)
             {
-                throw new KeyNotFoundException($"Card with name '{name}' does not exist.");
+                throw new KeyNotFoundException($"Card with name '{cardName}' does not exist.");
+            }
+        }
+
+        public bool HasCard(string cardName)
+        {
+            try
+            {
+                GetCardByName(cardName);
+                return true;
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
             }
         }
 

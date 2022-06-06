@@ -59,10 +59,7 @@ namespace ScrumBoardConsoleApp
                 }
                 catch(Exception e)
                 {
-                    Console.BackgroundColor = ConsoleColor.Red;
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    Console.WriteLine(e.Message);
-                    Console.ResetColor();
+                    LogError(e.Message);
                 }
             }
         }
@@ -158,10 +155,9 @@ namespace ScrumBoardConsoleApp
             string name = Console.ReadLine();
             Console.WriteLine("Enter description");
             string description = Console.ReadLine();
-            Console.WriteLine("Enter priority");
-            string priorityString = Console.ReadLine();
+            Card.PriorityType priority = ReadPriority("Enter priority");
 
-            board.AddNewCard(name, description, GetPriorityByString(priorityString));
+            board.AddNewCard(name, description, priority);
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Card was added successfully.");
@@ -240,10 +236,9 @@ namespace ScrumBoardConsoleApp
         {
             Console.WriteLine("Enter the card name for which want to change the priorty.");
             string name = Console.ReadLine();
-            Console.WriteLine("Enter the new priority.");
-            string priorityString = Console.ReadLine();
+            Card.PriorityType priority = ReadPriority("Enter the new priority.");
 
-            board.GetCardByName(name).ChangePriority(GetPriorityByString(priorityString));
+            board.GetCardByName(name).ChangePriority(priority);
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Card's priority changed successfully.");
@@ -282,6 +277,32 @@ namespace ScrumBoardConsoleApp
             }
 
             return _mapStringToPriority[priorityString];
+        }
+
+        private static Card.PriorityType ReadPriority(string msg)
+        {
+            while (true)
+            {
+                Console.WriteLine(msg);
+                string priorityString = Console.ReadLine();
+
+                if (!_mapStringToPriority.ContainsKey(priorityString))
+                {
+                    LogError("Invalid priority type. Available values: 'minor', 'normal', 'major', 'critical', 'blocker'");
+                }
+                else
+                {
+                    return _mapStringToPriority[priorityString];
+                }
+            }
+        }
+
+        private static void LogError(string msg)
+        {
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine(msg);
+            Console.ResetColor();
         }
     }
 }

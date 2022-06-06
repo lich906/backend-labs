@@ -162,14 +162,14 @@ namespace ScrumBoardTests
         public void RenameColumn_ColumnToBeRenamedExistsAndNewNameIsFree_ColumnRenamed()
         {
             _sut.AddNewColumn("Open");
-            Assert.True(_sut.ColumnNameExists("Open"));
-            Assert.False(_sut.ColumnNameExists("Done"));
+            Assert.True(_sut.ColumnExists("Open"));
+            Assert.False(_sut.ColumnExists("Done"));
             Assert.Single(_sut.GetAllColumns());
 
             _sut.RenameColumn("Open", "Done");
 
-            Assert.False(_sut.ColumnNameExists("Open"));
-            Assert.True(_sut.ColumnNameExists("Done"));
+            Assert.False(_sut.ColumnExists("Open"));
+            Assert.True(_sut.ColumnExists("Done"));
             Assert.Single(_sut.GetAllColumns());
         }
 
