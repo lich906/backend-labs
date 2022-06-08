@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ScrumBoard;
+using ScrumBoard.Model;
 using Xunit;
 
 namespace ScrumBoardTests
@@ -25,7 +25,7 @@ namespace ScrumBoardTests
         public void AddNewColumn_PassingNameArg_ColumnCreated()
         {
             _sut.AddNewColumn("To do");
-            BoardColumn column = _sut.GetColumnByName("To do");
+            Column column = _sut.GetColumnByName("To do");
             Assert.Equal("To do", column.Name);
         }
 
