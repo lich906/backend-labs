@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScrumBoard
+namespace ScrumBoard.Model
 {
     public class BoardColumn
     {

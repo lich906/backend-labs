@@ -19,8 +19,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ScrumBoard\ScrumBoard.csproj" />
-  </ItemGroup>
-
 </Project>

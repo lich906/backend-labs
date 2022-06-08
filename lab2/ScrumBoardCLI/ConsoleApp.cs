@@ -57,7 +57,7 @@ namespace ScrumBoardConsoleApp
                     command = ReadCommand();
                     HandleCommand(command, board);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     LogError(e.Message);
                 }
@@ -121,14 +121,14 @@ namespace ScrumBoardConsoleApp
         private static void ShowBoard(Board board)
         {
             Console.WriteLine($"++++++++++++++++++ {board.Name} ++++++++++++++++++");
-            List<BoardColumn> columns = board.GetAllColumns();
+            List<Column> columns = board.GetAllColumns();
 
             if (columns.Count == 0)
             {
                 Console.WriteLine("There is no columns yet. Use 'add-column' command to add some columns.");
             }
 
-            foreach (BoardColumn column in columns)
+            foreach (Column column in columns)
             {
                 Console.WriteLine($"============ {column.Name} ============");
                 List<Card> cards = column.GetAllCards();

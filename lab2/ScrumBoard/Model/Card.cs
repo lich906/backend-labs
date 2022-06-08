@@ -1,16 +1,16 @@
 ﻿using System;
 
-namespace ScrumBoard
+namespace ScrumBoard.Model
 {
     public class Card
     {
         public enum PriorityType
         {
             Minor = 0,
-            Normal,
-            Major,
-            Critical,
-            Blocker
+            Normal = 1,
+            Major = 2,
+            Critical = 3,
+            Blocker = 4
         };
 
         public Card(string name, string description, PriorityType priority)

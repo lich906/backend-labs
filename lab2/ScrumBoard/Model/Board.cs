@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ScrumBoard
+namespace ScrumBoard.Model
 {
     public class Board
     {
