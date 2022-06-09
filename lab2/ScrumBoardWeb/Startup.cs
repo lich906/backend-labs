@@ -7,13 +7,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using ScrumBoard.Repository;
+using ScrumBoardWeb.Application.DTO.Mapper;
 using ScrumBoardWeb.Application.Service;
+using ScrumBoardWeb.Infrastructure.Mapper;
 using ScrumBoardWeb.Infrastructure.Repository;
 using ScrumBoardWeb.Infrastructure.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ScrumBoardWeb
 {
@@ -31,6 +29,7 @@ namespace ScrumBoardWeb
         {
             services
                 .AddMemoryCache()
+                .AddScoped<CardDtoMapperInterface, CardDtoMapper>()
                 .AddScoped<ScrumBoardRepositoryInterface, ScrumBoardRepository>()
                 .AddScoped<ScrumBoardServiceInterface, ScrumBoardService>();
 

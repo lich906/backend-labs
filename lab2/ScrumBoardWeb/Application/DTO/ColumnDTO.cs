@@ -5,8 +5,8 @@ namespace ScrumBoardWeb.Application.DTO
 {
     public class ColumnDTO
     {
-        public string Name { get; }
-
         public ColumnDTO(string name) => Name = name;
+
+        public string Name { get; }
     }
 }

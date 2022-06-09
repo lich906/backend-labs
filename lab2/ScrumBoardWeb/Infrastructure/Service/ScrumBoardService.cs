@@ -70,7 +70,7 @@ namespace ScrumBoardWeb.Infrastructure.Service
             return new ColumnDTO(_scrumBoardRepository.GetColumn(boardIndex, index).Name);
         }
 
-        public List<ColumnDTO> GetAllBoardColumns(int boardIndex)
+        public List<ColumnDTO> GetBoardColumns(int boardIndex)
         {
             return _scrumBoardRepository.GetBoard(boardIndex)
                 .GetAllColumns().Select(column => new ColumnDTO(column.Name)).ToList();

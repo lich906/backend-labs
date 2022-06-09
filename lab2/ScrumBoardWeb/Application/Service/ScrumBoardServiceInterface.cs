@@ -20,7 +20,7 @@ namespace ScrumBoardWeb.Application.Service
 
         public void DeleteColumn(int boardIndex, int index);
 
-        public List<ColumnDTO> GetAllBoardColumns(int boardIndex);
+        public List<ColumnDTO> GetBoardColumns(int boardIndex);
 
         public ColumnDTO GetColumn(int boardIndex, int index);
 

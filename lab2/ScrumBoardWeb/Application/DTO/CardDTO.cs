@@ -7,17 +7,16 @@ namespace ScrumBoardWeb.Application.DTO
 {
     public class CardDTO
     {
-        public Card.PriorityType Priority { get; }
-
-        public string Name { get; }
-
-        public string Description { get; }
-
         public CardDTO(string name, string description, Card.PriorityType priority)
         {
             Priority = priority;
             Name = name;
             Description = description;
         }
+        public Card.PriorityType Priority { get; }
+
+        public string Name { get; }
+
+        public string Description { get; }
     }
 }
