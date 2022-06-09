@@ -9,7 +9,7 @@ using ScrumBoard.Model;
 
 namespace ScrumBoard.Repository
 {
-    public interface IScrumBoardRepository
+    public interface ScrumBoardRepositoryInterface
     {
         public List<Board> GetBoards();
         public void CreateBoard(string name);
@@ -22,7 +22,7 @@ namespace ScrumBoard.Repository
 
         public void DeleteColumn(int boardIndex, int index);
 
-        public BoardColumn GetColumn(int boardIndex, int index);
+        public Column GetColumn(int boardIndex, int index);
 
         public void CreateCard(int boardIndex, string name, string description, Card.PriorityType priority);
 

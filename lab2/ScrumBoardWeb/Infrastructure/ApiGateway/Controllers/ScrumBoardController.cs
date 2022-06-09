@@ -17,9 +17,9 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
     [ApiController]
     public class ScrumBoardController : ControllerBase
     {
-        private readonly IScrumBoardService _scrumBoardService;
+        private readonly ScrumBoardServiceInterface _scrumBoardService;
 
-        public ScrumBoardController(IScrumBoardService scrumBoardService)
+        public ScrumBoardController(ScrumBoardServiceInterface scrumBoardService)
         {
             _scrumBoardService = scrumBoardService;
         }

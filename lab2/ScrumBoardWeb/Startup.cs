@@ -31,8 +31,8 @@ namespace ScrumBoardWeb
         {
             services
                 .AddMemoryCache()
-                .AddScoped<IScrumBoardRepository, ScrumBoardRepository>()
-                .AddScoped<IScrumBoardService, ScrumBoardService>();
+                .AddScoped<ScrumBoardRepositoryInterface, ScrumBoardRepository>()
+                .AddScoped<ScrumBoardServiceInterface, ScrumBoardService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

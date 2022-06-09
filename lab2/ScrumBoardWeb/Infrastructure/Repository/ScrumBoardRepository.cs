@@ -11,7 +11,7 @@ using ScrumBoardWeb.Application.Exception;
 
 namespace ScrumBoardWeb.Infrastructure.Repository
 {
-    public class ScrumBoardRepository : IScrumBoardRepository
+    public class ScrumBoardRepository : ScrumBoardRepositoryInterface
     {
         private readonly IMemoryCache _memoryCache;
         private const string _memoryCacheBoardKey = "boards";

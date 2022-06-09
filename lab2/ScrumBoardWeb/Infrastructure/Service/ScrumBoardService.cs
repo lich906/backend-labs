@@ -10,10 +10,10 @@ using ScrumBoardWeb.Application.Service;
 
 namespace ScrumBoardWeb.Infrastructure.Service
 {
-    public class ScrumBoardService : IScrumBoardService
+    public class ScrumBoardService : ScrumBoardServiceInterface
     {
-        private readonly IScrumBoardRepository _scrumBoardRepository;
-        public ScrumBoardService(IScrumBoardRepository scrumBoardRepo)
+        private readonly ScrumBoardRepositoryInterface _scrumBoardRepository;
+        public ScrumBoardService(ScrumBoardRepositoryInterface scrumBoardRepo)
         {
             _scrumBoardRepository = scrumBoardRepo;
         }

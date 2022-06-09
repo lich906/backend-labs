@@ -6,7 +6,7 @@ using ScrumBoardWeb.Application.DTO;
 
 namespace ScrumBoardWeb.Application.Service
 {
-    public interface IScrumBoardService
+    public interface ScrumBoardServiceInterface
     {
         public void CreateBoard(BoardDTO boardDto);
 
