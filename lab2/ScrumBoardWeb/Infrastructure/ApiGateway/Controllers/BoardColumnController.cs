@@ -66,7 +66,7 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
         {
             try
             {
-                _scrumBoardService.CreateColumn(boardId, new ColumnDTO(columnInput.Name));
+                _scrumBoardService.CreateColumn(boardId, new ColumnDTO(columnInput.Name, new List<CardDTO>()));
 
                 return Ok("Column successfully created");
             }

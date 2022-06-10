@@ -12,6 +12,7 @@ namespace ScrumBoard.Repository
     public interface ScrumBoardRepositoryInterface
     {
         public List<Board> GetBoards();
+
         public void CreateBoard(string name);
 
         public void DeleteBoard(int index);

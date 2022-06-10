@@ -20,12 +20,10 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
     public class BoardController : ControllerBase
     {
         private readonly ScrumBoardServiceInterface _scrumBoardService;
-        private readonly CardDtoMapperInterface _cardDtoMapper;
 
-        public BoardController(ScrumBoardServiceInterface scrumBoardService, CardDtoMapperInterface cardDtoMapper)
+        public BoardController(ScrumBoardServiceInterface scrumBoardService)
         {
             _scrumBoardService = scrumBoardService;
-            _cardDtoMapper = cardDtoMapper;
         }
 
         // GET: api/board
@@ -64,13 +62,13 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
             }
         }
 
-        // POST: api/board
-        [HttpPost]
+        // POST: api/board/create
+        [HttpPost("create")]
         public IActionResult CreateBoard([FromBody] BoardInput boardInput)
         {
             try
             {
-                _scrumBoardService.CreateBoard(new BoardDTO(boardInput.Name));
+                _scrumBoardService.CreateBoard(new BoardDTO(boardInput.Name, new List<ColumnDTO>()));
             }
             catch (ApplicationException)
             {
