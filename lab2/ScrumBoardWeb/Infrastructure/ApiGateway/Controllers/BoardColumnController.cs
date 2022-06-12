@@ -54,6 +54,10 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
             {
                 return NotFound(e.Message);
             }
+            catch (InvalidOperationException e)
+            {
+                return NotFound(e.Message);
+            }
             catch (ApplicationException e)
             {
                 return Problem(e.Message);

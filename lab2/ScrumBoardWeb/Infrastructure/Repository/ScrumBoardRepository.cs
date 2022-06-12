@@ -27,8 +27,7 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         public List<Board> GetBoards()
         {
             List<Board> boards = _context.Boards
-                .Select(b => _hydrator.HydrateBoard(b))
-                .AsEnumerable().ToList();
+                .Select(b => _hydrator.HydrateBoard(b)).ToList();
 
             if (boards != null)
             {

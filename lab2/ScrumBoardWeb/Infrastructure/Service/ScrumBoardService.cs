@@ -7,6 +7,7 @@ using ScrumBoard.Model;
 using ScrumBoard.Repository;
 using ScrumBoardWeb.Application.DTO;
 using ScrumBoardWeb.Application.Service;
+using System;
 
 namespace ScrumBoardWeb.Infrastructure.Service
 {
@@ -51,8 +52,15 @@ namespace ScrumBoardWeb.Infrastructure.Service
 
         public List<BoardDTO> GetAllBoards()
         {
-            return _scrumBoardRepository.GetBoards()
-                .Select((board, index) => new BoardDTO(board.Name, GetBoardColumns(index))).ToList();
+            try
+            {
+                return _scrumBoardRepository.GetBoards()
+                    .Select((board, index) => new BoardDTO(board.Name, GetBoardColumns(index))).ToList();
+            }
+            catch (InvalidOperationException)
+            {
+                return new();
+            }
         }
 
         public BoardDTO GetBoard(int index)
@@ -79,15 +87,29 @@ namespace ScrumBoardWeb.Infrastructure.Service
 
         public List<ColumnDTO> GetBoardColumns(int boardIndex)
         {
-            return _scrumBoardRepository.GetBoard(boardIndex)
-                .GetAllColumns().Select((column, index) => new ColumnDTO(column.Name, GetCards(boardIndex, index))).ToList();
+            try
+            {
+                return _scrumBoardRepository.GetBoard(boardIndex)
+                    .GetAllColumns().Select((column, index) => new ColumnDTO(column.Name, GetCards(boardIndex, index))).ToList();
+            }
+            catch (InvalidOperationException)
+            {
+                return new();
+            }
         }
 
         public List<CardDTO> GetCards(int boardIndex, int columnIndex)
         {
-            return _scrumBoardRepository.GetBoard(boardIndex)
-                .GetAllColumns().ElementAt(columnIndex)
-                .GetAllCards().Select(card => new CardDTO(card.Name, card.Description, card.Priority)).ToList();
+            try
+            {
+                return _scrumBoardRepository.GetBoard(boardIndex)
+                    .GetAllColumns().ElementAt(columnIndex)
+                    .GetAllCards().Select(card => new CardDTO(card.Name, card.Description, card.Priority)).ToList();
+            }
+            catch (InvalidOperationException)
+            {
+                return new();
+            }
         }
     }
 }
