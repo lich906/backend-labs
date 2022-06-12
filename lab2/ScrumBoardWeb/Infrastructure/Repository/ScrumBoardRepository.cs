@@ -4,26 +4,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
 using ScrumBoard.Model;
 using ScrumBoard.Repository;
+using ScrumBoardWeb.Infrastructure.DBContext;
 using ScrumBoardWeb.Application.Exception;
+using Microsoft.EntityFrameworkCore;
 
 namespace ScrumBoardWeb.Infrastructure.Repository
 {
     public class ScrumBoardRepository : ScrumBoardRepositoryInterface
     {
-        private readonly IMemoryCache _memoryCache;
-        private const string _memoryCacheBoardKey = "boards";
+        private readonly BoardsContext _context;
 
-        public ScrumBoardRepository(IMemoryCache memoryCache)
+        public ScrumBoardRepository(BoardsContext context)
         {
-            _memoryCache = memoryCache;
+            _context = context;
+            _context.Database.EnsureCreated();
         }
 
         public List<Board> GetBoards()
         {
-            List<Board>? boards = _memoryCache.Get<List<Board>>(_memoryCacheBoardKey);
+            List<Board> boards = _context.Boards.ToList();
 
             if (boards != null)
             {
@@ -35,36 +36,28 @@ namespace ScrumBoardWeb.Infrastructure.Repository
 
         public void CreateBoard(string name)
         {
-            List<Board> boards = GetBoards();
-
-            boards.Add(new Board(name));
-
-            _memoryCache.Set(_memoryCacheBoardKey, boards);
+            _context.Boards.Add(new Board(name));
+            _context.SaveChanges();
         }
 
         public void DeleteBoard(int index)
         {
-            List<Board> boards = GetBoards();
-
             try
             {
-                boards.RemoveAt(index);
+                _context.Boards.Remove(GetBoard(index));
+                _context.SaveChanges();
             }
             catch (ArgumentOutOfRangeException)
             {
                 throw new OutOfRangeException();
             }
-
-            _memoryCache.Set(_memoryCacheBoardKey, boards);
         }
 
         public Board GetBoard(int index)
         {
-            List<Board> boards = GetBoards();
-
             try
             {
-                return boards.ElementAt(index);
+                return _context.Boards.ElementAt(index);
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -74,12 +67,10 @@ namespace ScrumBoardWeb.Infrastructure.Repository
 
         public void CreateColumn(int boardIndex, string name)
         {
-            List<Board> boards = GetBoards();
-
             try
             {
-                boards.ElementAt(boardIndex).AddNewColumn(name);
-                _memoryCache.Set(_memoryCacheBoardKey, boards);
+                _context.Boards.ElementAt(boardIndex).AddNewColumn(name);
+                _context.SaveChanges();
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -93,12 +84,10 @@ namespace ScrumBoardWeb.Infrastructure.Repository
 
         public void DeleteColumn(int boardIndex, int index)
         {
-            List<Board> boards = GetBoards();
-
             try
             {
-                boards.ElementAt(boardIndex).GetAllColumns().RemoveAt(index);
-                _memoryCache.Set(_memoryCacheBoardKey, boards);
+                GetBoard(boardIndex).GetAllColumns().RemoveAt(index);
+                _context.SaveChanges();
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -112,11 +101,9 @@ namespace ScrumBoardWeb.Infrastructure.Repository
 
         public Column GetColumn(int boardIndex, int index)
         {
-            List<Board> boards = GetBoards();
-
             try
             {
-                return boards.ElementAt(boardIndex).GetAllColumns().ElementAt(index);
+                return GetBoard(boardIndex).GetAllColumns().ElementAt(index);
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -130,12 +117,10 @@ namespace ScrumBoardWeb.Infrastructure.Repository
 
         public void CreateCard(int boardIndex, string name, string description, Card.PriorityType priority)
         {
-            List<Board> boards = GetBoards();
-
             try
             {
-                boards.ElementAt(boardIndex).AddNewCard(name, description, priority);
-                _memoryCache.Set(_memoryCacheBoardKey, boards);
+                GetBoard(boardIndex).AddNewCard(name, description, priority);
+                _context.SaveChanges();
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -149,12 +134,10 @@ namespace ScrumBoardWeb.Infrastructure.Repository
 
         public void DeleteCard(int boardIndex, int columnIndex, int index)
         {
-            List<Board> boards = GetBoards();
-
             try
             {
-                boards.ElementAt(boardIndex).GetAllColumns().ElementAt(columnIndex).GetAllCards().RemoveAt(index);
-                _memoryCache.Set(_memoryCacheBoardKey, boards);
+                GetColumn(boardIndex, columnIndex).GetAllCards().RemoveAt(index);
+                _context.SaveChanges();
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -168,11 +151,9 @@ namespace ScrumBoardWeb.Infrastructure.Repository
 
         public Card GetCard(int boardIndex, int columnIndex, int index)
         {
-            List<Board> boards = GetBoards();
-
             try
             {
-                return boards.ElementAt(boardIndex).GetAllColumns().ElementAt(columnIndex).GetAllCards().ElementAt(index);
+                return GetColumn(boardIndex, columnIndex).GetAllCards().ElementAt(index);
             }
             catch (ArgumentOutOfRangeException)
             {

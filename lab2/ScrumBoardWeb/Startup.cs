@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
 using ScrumBoard.Repository;
+using ScrumBoardWeb.Infrastructure.DBContext;
 using ScrumBoardWeb.Application.DTO.Mapper;
 using ScrumBoardWeb.Application.Service;
 using ScrumBoardWeb.Infrastructure.Mapper;
@@ -28,7 +28,8 @@ namespace ScrumBoardWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddMemoryCache()
+                .AddDbContext<BoardsContext>(opt =>
+                opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")))
                 .AddScoped<CardDtoMapperInterface, CardDtoMapper>()
                 .AddScoped<ScrumBoardRepositoryInterface, ScrumBoardRepository>()
                 .AddScoped<ScrumBoardServiceInterface, ScrumBoardService>();

@@ -1,25 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using ScrumBoardDomain.Model.Constants;
 
 namespace ScrumBoard.Model
 {
     public class Board
     {
-        private const int COLUMNS_LIMIT = 10;
+        private List<Column> _columns = new();
 
-        private List<Column> _columns = new List<Column>();
+        public Board()
+        {
+        }
 
         public Board(string name)
         {
             Name = name;
         }
 
+        [Key]
+        public int Id { get; set; }
         public string Name { get; }
 
         public void AddNewColumn(string name)
         {
-            if (_columns.Count == COLUMNS_LIMIT)
+            if (_columns.Count == BoardConstants.COLUMNS_LIMIT)
             {
                 throw new ApplicationException("Failed to add column: columns limit reached.");
             }
