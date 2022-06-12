@@ -6,12 +6,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using ScrumBoard.Repository;
-using ScrumBoardWeb.Infrastructure.DBContext;
+using ScrumBoardWeb.Infrastructure.Database.DBContext;
 using ScrumBoardWeb.Application.DTO.Mapper;
 using ScrumBoardWeb.Application.Service;
 using ScrumBoardWeb.Infrastructure.Mapper;
 using ScrumBoardWeb.Infrastructure.Repository;
 using ScrumBoardWeb.Infrastructure.Service;
+using ScrumBoardWeb.Infrastructure.Database;
 
 namespace ScrumBoardWeb
 {
@@ -28,8 +29,9 @@ namespace ScrumBoardWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddDbContext<BoardsContext>(opt =>
+                .AddDbContext<ScrumBoardDbContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")))
+                .AddScoped<DatabaseEntityHydratorInterface, DatabaseEntityHydrator>()
                 .AddScoped<CardDtoMapperInterface, CardDtoMapper>()
                 .AddScoped<ScrumBoardRepositoryInterface, ScrumBoardRepository>()
                 .AddScoped<ScrumBoardServiceInterface, ScrumBoardService>();

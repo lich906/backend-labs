@@ -6,25 +6,29 @@ using System.Collections.Generic;
 using System.Linq;
 using ScrumBoard.Model;
 using ScrumBoard.Repository;
-using ScrumBoardWeb.Infrastructure.DBContext;
+using ScrumBoardWeb.Infrastructure.Database.DBContext;
 using ScrumBoardWeb.Application.Exception;
-using Microsoft.EntityFrameworkCore;
+using ScrumBoardWeb.Infrastructure.Database;
 
 namespace ScrumBoardWeb.Infrastructure.Repository
 {
     public class ScrumBoardRepository : ScrumBoardRepositoryInterface
     {
-        private readonly BoardsContext _context;
+        private readonly ScrumBoardDbContext _context;
+        private readonly DatabaseEntityHydratorInterface _hydrator;
 
-        public ScrumBoardRepository(BoardsContext context)
+        public ScrumBoardRepository(ScrumBoardDbContext context, DatabaseEntityHydratorInterface hydrator)
         {
             _context = context;
+            _hydrator = hydrator;
             _context.Database.EnsureCreated();
         }
 
         public List<Board> GetBoards()
         {
-            List<Board> boards = _context.Boards.ToList();
+            List<Board> boards = _context.Boards
+                .Select(b => _hydrator.HydrateBoard(b))
+                .AsEnumerable().ToList();
 
             if (boards != null)
             {
@@ -36,7 +40,7 @@ namespace ScrumBoardWeb.Infrastructure.Repository
 
         public void CreateBoard(string name)
         {
-            _context.Boards.Add(new Board(name));
+            _context.Boards.Add(new Database.Entity.Board(name));
             _context.SaveChanges();
         }
 
@@ -44,7 +48,7 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         {
             try
             {
-                _context.Boards.Remove(GetBoard(index));
+                _context.Boards.Remove(_context.Boards.ElementAt(index));
                 _context.SaveChanges();
             }
             catch (ArgumentOutOfRangeException)
@@ -57,7 +61,10 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         {
             try
             {
-                return _context.Boards.ElementAt(index);
+                return _context.Boards
+                    .Where(b => b.Id == index)
+                    .Select(b => _hydrator.HydrateBoard(b))
+                    .Single();
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -69,7 +76,9 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         {
             try
             {
-                _context.Boards.ElementAt(boardIndex).AddNewColumn(name);
+                _context.Boards
+                    .Where(b => b.Id == boardIndex)
+                    .Select(b => b).Single().Columns.Add(new Database.Entity.Column(name));
                 _context.SaveChanges();
             }
             catch (ArgumentOutOfRangeException)
@@ -86,8 +95,16 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         {
             try
             {
-                GetBoard(boardIndex).GetAllColumns().RemoveAt(index);
-                _context.SaveChanges();
+
+                Database.Entity.Column columnToDelete = _context.Columns
+                    .Where(c => c.Board.Id == boardIndex)
+                    .SingleOrDefault(c => c.Id == index);
+
+                if (columnToDelete != null)
+                {
+                    _context.Columns.Remove(columnToDelete);
+                    _context.SaveChanges();
+                }
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -103,7 +120,10 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         {
             try
             {
-                return GetBoard(boardIndex).GetAllColumns().ElementAt(index);
+                return _context.Columns
+                    .Where(c => c.Board.Id == boardIndex)
+                    .Where(c => c.Id == index)
+                    .Select(c => _hydrator.HydrateColumn(c)).Single();
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -119,7 +139,10 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         {
             try
             {
-                GetBoard(boardIndex).AddNewCard(name, description, priority);
+                _context.Boards
+                    .Where(b => b.Id == boardIndex).Single()
+                    .Columns[0].Cards
+                    .Add(new Database.Entity.Card(name, description, (int)priority));
                 _context.SaveChanges();
             }
             catch (ArgumentOutOfRangeException)
@@ -136,8 +159,16 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         {
             try
             {
-                GetColumn(boardIndex, columnIndex).GetAllCards().RemoveAt(index);
-                _context.SaveChanges();
+                Database.Entity.Card cardToDelete = _context.Cards
+                    .Where(c => c.Column.Id == columnIndex)
+                    .Where(c => c.Column.Board.Id == boardIndex)
+                    .SingleOrDefault(c => c.Id == index);
+
+                if (cardToDelete != null)
+                {
+                    _context.Cards.Remove(cardToDelete);
+                    _context.SaveChanges();
+                }
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -153,7 +184,11 @@ namespace ScrumBoardWeb.Infrastructure.Repository
         {
             try
             {
-                return GetColumn(boardIndex, columnIndex).GetAllCards().ElementAt(index);
+                return _context.Cards
+                    .Where(c => c.Column.Id == columnIndex)
+                    .Where(c => c.Column.Board.Id == boardIndex)
+                    .Where(c => c.Id == index)
+                    .Select(c => _hydrator.HydrateCard(c)).Single();
             }
             catch (ArgumentOutOfRangeException)
             {

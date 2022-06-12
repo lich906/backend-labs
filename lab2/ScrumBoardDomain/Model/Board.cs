@@ -10,10 +10,6 @@ namespace ScrumBoard.Model
     {
         private List<Column> _columns = new();
 
-        public Board()
-        {
-        }
-
         public Board(string name)
         {
             Name = name;
@@ -21,21 +17,27 @@ namespace ScrumBoard.Model
 
         [Key]
         public int Id { get; set; }
+
         public string Name { get; }
 
         public void AddNewColumn(string name)
+        {
+            AppendColumn(new Column(name));
+        }
+
+        public void AppendColumn(Column column)
         {
             if (_columns.Count == BoardConstants.COLUMNS_LIMIT)
             {
                 throw new ApplicationException("Failed to add column: columns limit reached.");
             }
 
-            if (ColumnExists(name))
+            if (ColumnExists(column.Name))
             {
-                throw new ApplicationException($"Column with name '{name}' already exists.");
+                throw new ApplicationException($"Column with name '{column.Name}' already exists.");
             }
 
-            _columns.Add(new Column(name));
+            _columns.Add(column);
         }
 
         public void AddNewCard(string name, string description, Card.PriorityType priority)
