@@ -6,18 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using ScrumBoard.Model;
 using ScrumBoard.Repository;
-using ScrumBoardWeb.Infrastructure.Database.DBContext;
+using ScrumBoardWeb.Database.DBContext;
+using ScrumBoardWeb.Database;
 using ScrumBoardWeb.Application.Exception;
-using ScrumBoardWeb.Infrastructure.Database;
 
 namespace ScrumBoardWeb.Infrastructure.Repository
 {
-    public class ScrumBoardRepository : ScrumBoardRepositoryInterface
+    public class ScrumBoardRepository : IScrumBoardRepository
     {
         private readonly ScrumBoardDbContext _context;
-        private readonly DatabaseEntityHydratorInterface _hydrator;
+        private readonly IDatabaseEntityHydrator _hydrator;
 
-        public ScrumBoardRepository(ScrumBoardDbContext context, DatabaseEntityHydratorInterface hydrator)
+        public ScrumBoardRepository(ScrumBoardDbContext context, IDatabaseEntityHydrator hydrator)
         {
             _context = context;
             _hydrator = hydrator;

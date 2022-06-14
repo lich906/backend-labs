@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ScrumBoard.Model;
-using ScrumBoardWeb.Infrastructure.Database.Entity;
+using ScrumBoardWeb.Database.Entity;
 
-namespace ScrumBoardWeb.Infrastructure.Database
+namespace ScrumBoardWeb.Database
 {
-    public interface DatabaseEntityHydratorInterface
+    public interface IDatabaseEntityHydrator
     {
         public List<ScrumBoard.Model.Board> HydrateBoards(List<Entity.Board> boards);
 

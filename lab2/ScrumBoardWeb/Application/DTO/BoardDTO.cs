@@ -3,11 +3,11 @@
 
 using System.Collections.Generic;
 
-namespace ScrumBoardWeb.Application.DTO
+namespace ScrumBoardWeb.Application.Dto
 {
-    public class BoardDTO
+    public class BoardDto
     {
-        public BoardDTO(string name, List<ColumnDTO> columns)
+        public BoardDto(string name, List<ColumnDto> columns)
         {
             Name = name;
             Columns = columns;
@@ -15,6 +15,6 @@ namespace ScrumBoardWeb.Application.DTO
 
         public string Name { get; }
 
-        public List<ColumnDTO> Columns { get; }
+        public List<ColumnDto> Columns { get; }
     }
 }

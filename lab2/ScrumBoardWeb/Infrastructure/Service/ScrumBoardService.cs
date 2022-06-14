@@ -5,21 +5,21 @@ using System.Linq;
 using System.Collections.Generic;
 using ScrumBoard.Model;
 using ScrumBoard.Repository;
-using ScrumBoardWeb.Application.DTO;
+using ScrumBoardWeb.Application.Dto;
 using ScrumBoardWeb.Application.Service;
 using System;
 
 namespace ScrumBoardWeb.Infrastructure.Service
 {
-    public class ScrumBoardService : ScrumBoardServiceInterface
+    public class ScrumBoardService : IScrumBoardService
     {
-        private readonly ScrumBoardRepositoryInterface _scrumBoardRepository;
-        public ScrumBoardService(ScrumBoardRepositoryInterface scrumBoardRepo)
+        private readonly IScrumBoardRepository _scrumBoardRepository;
+        public ScrumBoardService(IScrumBoardRepository scrumBoardRepo)
         {
             _scrumBoardRepository = scrumBoardRepo;
         }
 
-        public void CreateBoard(BoardDTO boardDto)
+        public void CreateBoard(BoardDto boardDto)
         {
             _scrumBoardRepository.CreateBoard(boardDto.Name);
         }
@@ -29,12 +29,12 @@ namespace ScrumBoardWeb.Infrastructure.Service
             _scrumBoardRepository.DeleteBoard(index);
         }
 
-        public void CreateCard(int boardIndex, CardDTO cardDto)
+        public void CreateCard(int boardIndex, CardDto cardDto)
         {
             _scrumBoardRepository.CreateCard(boardIndex, cardDto.Name, cardDto.Description, cardDto.Priority);
         }
 
-        public void CreateColumn(int boardIndex, ColumnDTO columnDto)
+        public void CreateColumn(int boardIndex, ColumnDto columnDto)
         {
             _scrumBoardRepository.CreateColumn(boardIndex, columnDto.Name);
         }
@@ -50,12 +50,12 @@ namespace ScrumBoardWeb.Infrastructure.Service
             _scrumBoardRepository.DeleteColumn(boardIndex, index);
         }
 
-        public List<BoardDTO> GetAllBoards()
+        public List<BoardDto> GetAllBoards()
         {
             try
             {
                 return _scrumBoardRepository.GetBoards()
-                    .Select((board, index) => new BoardDTO(board.Name, GetBoardColumns(index))).ToList();
+                    .Select((board, index) => new BoardDto(board.Name, GetBoardColumns(index))).ToList();
             }
             catch (InvalidOperationException)
             {
@@ -63,34 +63,34 @@ namespace ScrumBoardWeb.Infrastructure.Service
             }
         }
 
-        public BoardDTO GetBoard(int index)
+        public BoardDto GetBoard(int index)
         {
-            return new BoardDTO(
+            return new BoardDto(
                 _scrumBoardRepository.GetBoard(index).Name,
                 GetBoardColumns(index)
             );
         }
 
-        public CardDTO GetCard(int boardIndex, int columnIndex, int index)
+        public CardDto GetCard(int boardIndex, int columnIndex, int index)
         {
             Card card = _scrumBoardRepository.GetCard(boardIndex, columnIndex, index);
-            return new CardDTO(card.Name, card.Description, card.Priority);
+            return new CardDto(card.Name, card.Description, card.Priority);
         }
 
-        public ColumnDTO GetColumn(int boardIndex, int index)
+        public ColumnDto GetColumn(int boardIndex, int index)
         {
-            return new ColumnDTO(
+            return new ColumnDto(
                 _scrumBoardRepository.GetColumn(boardIndex, index).Name,
-                GetCards(boardIndex, index)
+                GetColumnCards(boardIndex, index)
             );
         }
 
-        public List<ColumnDTO> GetBoardColumns(int boardIndex)
+        public List<ColumnDto> GetBoardColumns(int boardIndex)
         {
             try
             {
                 return _scrumBoardRepository.GetBoard(boardIndex)
-                    .GetAllColumns().Select((column, index) => new ColumnDTO(column.Name, GetCards(boardIndex, index))).ToList();
+                    .GetAllColumns().Select((column, index) => new ColumnDto(column.Name, GetColumnCards(boardIndex, index))).ToList();
             }
             catch (InvalidOperationException)
             {
@@ -98,13 +98,13 @@ namespace ScrumBoardWeb.Infrastructure.Service
             }
         }
 
-        public List<CardDTO> GetCards(int boardIndex, int columnIndex)
+        public List<CardDto> GetColumnCards(int boardIndex, int columnIndex)
         {
             try
             {
                 return _scrumBoardRepository.GetBoard(boardIndex)
                     .GetAllColumns().ElementAt(columnIndex)
-                    .GetAllCards().Select(card => new CardDTO(card.Name, card.Description, card.Priority)).ToList();
+                    .GetAllCards().Select(card => new CardDto(card.Name, card.Description, card.Priority)).ToList();
             }
             catch (InvalidOperationException)
             {

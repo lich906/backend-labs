@@ -3,11 +3,11 @@
 
 using ScrumBoard.Model;
 
-namespace ScrumBoardWeb.Application.DTO
+namespace ScrumBoardWeb.Application.Dto
 {
-    public class CardDTO
+    public class CardDto
     {
-        public CardDTO(string name, string description, Card.PriorityType priority)
+        public CardDto(string name, string description, Card.PriorityType priority)
         {
             Priority = priority;
             Name = name;

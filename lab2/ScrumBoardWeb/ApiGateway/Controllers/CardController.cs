@@ -7,30 +7,31 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ScrumBoardWeb.Application.DTO;
 using ScrumBoardWeb.Application.DTO.Input;
+using ScrumBoardWeb.Application.DTO.Mapper;
 using ScrumBoardWeb.Application.Service;
 
-namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
+namespace ScrumBoardWeb.ApiGateway.Controllers
 {
-    [Route("api/board/{boardId}/column")]
+    [Route("api/board/{boardid}/column/{columnId}/card")]
     [ApiController]
-    public class BoardColumnController : ControllerBase
+    public class CardController : ControllerBase
     {
-        private readonly ScrumBoardServiceInterface _scrumBoardService;
-
-        public BoardColumnController(ScrumBoardServiceInterface scrumBoardService)
+        private readonly IScrumBoardService _scrumBoardService;
+        private readonly CardDtoMapperInterface _cardDtoMapper;
+        public CardController(IScrumBoardService scrumBoardService, CardDtoMapperInterface cardDtoMapper)
         {
             _scrumBoardService = scrumBoardService;
+            _cardDtoMapper = cardDtoMapper;
         }
 
-        // GET: api/board/5/column
+        // GET: api/board/5/column/3/card
         [HttpGet]
-        public IActionResult GetColumns(int boardId)
+        public IActionResult GetCards(int boardId, int columnId)
         {
             try
             {
-                return Ok(_scrumBoardService.GetBoardColumns(boardId));
+                return Ok(_scrumBoardService.GetColumnCards(boardId, columnId));
             }
             catch (IndexOutOfRangeException e)
             {
@@ -42,13 +43,13 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
             }
         }
 
-        // GET: api/board/5/column/3
+        // GET: api/board/5/column/3/card/2
         [HttpGet("{id}")]
-        public IActionResult GetColumn(int boardId, int id)
+        public IActionResult GetCard(int boardId, int columnId, int id)
         {
             try
             {
-                return Ok(_scrumBoardService.GetColumn(boardId, id));
+                return Ok(_scrumBoardService.GetCard(boardId, columnId, id));
             }
             catch (IndexOutOfRangeException e)
             {
@@ -64,13 +65,13 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
             }
         }
 
-        // POST: api/board/5/column/create
+        // POST: api/board/5/column/3/card/create
         [HttpPost("create")]
-        public IActionResult CreateColumn(int boardId, [FromBody] ColumnInput columnInput)
+        public IActionResult CreateColumn(int boardId, [FromBody] CardInput columnInput)
         {
             try
             {
-                _scrumBoardService.CreateColumn(boardId, new ColumnDTO(columnInput.Name, new List<CardDTO>()));
+                _scrumBoardService.CreateCard(boardId, _cardDtoMapper.FromCardInput(columnInput));
 
                 return Ok("Column successfully created");
             }
@@ -84,13 +85,13 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
             }
         }
 
-        // DELETE: api/board/5/column/create
+        // DELETE: api/board/5/column/3/card/2/delete
         [HttpDelete("{id}/delete")]
-        public IActionResult DeleteColumn(int boardId, int id)
+        public IActionResult DeleteColumn(int boardId, int columnId, int id)
         {
             try
             {
-                _scrumBoardService.DeleteColumn(boardId, id);
+                _scrumBoardService.DeleteCard(boardId, columnId, id);
 
                 return Ok("Column successfully deleted");
             }

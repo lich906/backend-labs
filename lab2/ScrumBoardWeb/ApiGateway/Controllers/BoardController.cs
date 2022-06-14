@@ -13,15 +13,15 @@ using ScrumBoardWeb.Application.Service;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
+namespace ScrumBoardWeb.ApiGateway.Controllers
 {
     [Route("api/board")]
     [ApiController]
     public class BoardController : ControllerBase
     {
-        private readonly ScrumBoardServiceInterface _scrumBoardService;
+        private readonly IScrumBoardService _scrumBoardService;
 
-        public BoardController(ScrumBoardServiceInterface scrumBoardService)
+        public BoardController(IScrumBoardService scrumBoardService)
         {
             _scrumBoardService = scrumBoardService;
         }
@@ -72,7 +72,7 @@ namespace ScrumBoardWeb.Infrastructure.ApiGateway.Controllers
         {
             try
             {
-                _scrumBoardService.CreateBoard(new BoardDTO(boardInput.Name, new List<ColumnDTO>()));
+                _scrumBoardService.CreateBoard(new BoardDto(boardInput.Name, new List<ColumnDto>()));
             }
             catch (ApplicationException)
             {

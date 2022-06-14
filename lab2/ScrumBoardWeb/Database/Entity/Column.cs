@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ScrumBoardWeb.Infrastructure.Database.Entity
+namespace ScrumBoardWeb.Database.Entity
 {
     public class Column
     {

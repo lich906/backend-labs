@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Collections.Generic;
-using ScrumBoardWeb.Application.DTO;
-using ScrumBoardWeb.Infrastructure.Database.Entity;
+using ScrumBoardWeb.Application.Dto;
+using ScrumBoardWeb.Database.Entity;
 using ScrumBoard.Model;
 
-namespace ScrumBoardWeb.Infrastructure.Database
+namespace ScrumBoardWeb.Database
 {
-    public class DatabaseEntityHydrator : DatabaseEntityHydratorInterface
+    public class DatabaseEntityHydrator : IDatabaseEntityHydrator
     {
         public List<ScrumBoard.Model.Board> HydrateBoards(List<Entity.Board> boardsData)
         {

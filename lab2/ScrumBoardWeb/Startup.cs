@@ -31,10 +31,10 @@ namespace ScrumBoardWeb
             services
                 .AddDbContext<ScrumBoardDbContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")))
-                .AddScoped<DatabaseEntityHydratorInterface, DatabaseEntityHydrator>()
+                .AddScoped<IDatabaseEntityHydrator, DatabaseEntityHydrator>()
                 .AddScoped<CardDtoMapperInterface, CardDtoMapper>()
-                .AddScoped<ScrumBoardRepositoryInterface, ScrumBoardRepository>()
-                .AddScoped<ScrumBoardServiceInterface, ScrumBoardService>();
+                .AddScoped<IScrumBoardRepository, ScrumBoardRepository>()
+                .AddScoped<IScrumBoardService, ScrumBoardService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

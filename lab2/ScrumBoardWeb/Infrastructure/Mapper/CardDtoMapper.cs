@@ -14,9 +14,9 @@ namespace ScrumBoardWeb.Infrastructure.Mapper
 {
     public class CardDtoMapper : CardDtoMapperInterface
     {
-        public CardDTO FromCardInput(CardInput cardInput)
+        public CardDto FromCardInput(CardInput cardInput)
         {
-            return new CardDTO(
+            return new CardDto(
                 cardInput.Name,
                 cardInput.Description,
                 (Card.PriorityType)cardInput.Priority

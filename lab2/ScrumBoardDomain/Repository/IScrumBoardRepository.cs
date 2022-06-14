@@ -9,7 +9,7 @@ using ScrumBoard.Model;
 
 namespace ScrumBoard.Repository
 {
-    public interface ScrumBoardRepositoryInterface
+    public interface IScrumBoardRepository
     {
         public List<Board> GetBoards();
 

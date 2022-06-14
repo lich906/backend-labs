@@ -7,15 +7,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ScrumBoardWeb.Infrastructure.Database.Entity
+namespace ScrumBoardWeb.Database.Entity
 {
-    public class Card
+    public class Board
     {
-        public Card(string name, string description, int priority)
+        public Board(string name)
         {
             Name = name;
-            Description = description;
-            Priority = priority;
         }
 
         [Key]
@@ -23,10 +21,6 @@ namespace ScrumBoardWeb.Infrastructure.Database.Entity
 
         public string Name { get; set; }
 
-        public string Description { get; set; }
-
-        public int Priority { get; set; }
-
-        public Column Column { get; set; }
+        public List<Column> Columns { get; set; }
     }
 }
